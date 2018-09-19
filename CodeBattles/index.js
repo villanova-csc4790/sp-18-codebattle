@@ -1,5 +1,7 @@
 var myCodeMirror = CodeMirror(document.body, {
-    value: "function myScript(){return 100;}\n",
-    mode:  "javascript",
-    lineNumbers: true
+    value: "public class CodeBattles",
+    mode:  "text/x-java",
+    lineNumbers: true,
+    matchBrackets: true,
+    autoCloseBrackets: true,
   });
