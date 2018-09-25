@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>CodeBattles</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <div><h1>CodeBattles</h1></div>
+        <script src="CodeMirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="../CodeMirror/lib/codemirror.css">
+<script src="CodeMirror/mode/clike/clike.js"></script>
+        <script async defer></script>
+        <script src="CodeMirror/addon/edit/matchbrackets.js"></script>
+        <script src="CodeMirror/addon/edit/closebrackets.js"></script>
+        <script src="FileSaver.js"></script> 
+        <!-- <script src = "../node_modules/requirejs/require.js"></script>-->
+        <div id = "text_editor">Input Code Here
+            <form action = "/submitted" method = "POST">
+                <div id = editordiv>
+                    <textarea id="editor" name = "editor" class = "">
+public class CodeBattles{
+    public static void main (String[] args){
+
+}}
+                    </textarea>
+                    <input type="submit" id="submit_code" value="Submit Code">
+                </div>
+            </form>
+        </div>
+
+        <script src="index.js"></script>
+
+
+    </body>
+</html>
