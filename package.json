@@ -1,0 +1,53 @@
+{
+  "name": "sp-18-codebattle",
+  "version": "1.0.0",
+  "description": "sp-18-codebattle created by GitHub Classroom Jacob Kulanko & Zack Mateja",
+  "main": "server.js",
+  "dependencies": {
+    "blint": "^1.0.3",
+    "body-parser": "^1.18.3",
+    "bootstrap": "^4.1.3",
+    "browserify": "^16.2.2",
+    "child_process": "^1.0.2",
+    "compile-run": "^2.1.2",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "express-flash": "0.0.2",
+    "express-myconnection": "^1.0.4",
+    "express-session": "^1.15.6",
+    "express-validator": "^5.3.0",
+    "file": "^0.2.2",
+    "file-saver": "^1.3.8",
+    "htmlhint": "^0.10.1",
+    "http": "^0.0.0",
+    "https": "^1.0.0",
+    "jade": "^1.11.0",
+    "jquery": "^3.3.1",
+    "method-override": "^3.0.0",
+    "mongodb": "^3.1.6",
+    "mysql": "^2.16.0",
+    "node-static": "^0.7.11",
+    "path": "^0.12.7",
+    "phantomjs-prebuilt": "^2.1.16",
+    "pug": "^2.0.3",
+    "pug-cli": "^1.0.0-alpha6",
+    "requirejs": "^2.3.6",
+    "webpage": "^0.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/villanova-csc4790/sp-18-codebattle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/villanova-csc4790/sp-18-codebattle/issues"
+  },
+  "homepage": "https://github.com/villanova-csc4790/sp-18-codebattle#readme"
+}
