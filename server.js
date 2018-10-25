@@ -30,11 +30,9 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
     input = {
         source:req.body.editor
     };
-    con.query("SELECT test_case FROM problem WHERE id = 1", function (err, result, fields) {
+    con.query("SELECT test_case FROM problem WHERE ProblemId = "+pnum, function (err, result, fields) {
      if (err) throw err;
-     var testcaseString = result[0].test_case;
-     var testcase = parseInt(testcaseString, 10)
- 	
+     var testcase = result[0].test_case;
 
     let resultPromise = java.runSource(input.source, {stdin:testcase})
     resultPromise
@@ -42,16 +40,15 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
             console.log(result);//result object
             if(result.exitCode == 0)
             {
-            	con.query("SELECT expected_output FROM problem WHERE id = " + pnum, function (err, result1, fields) {
+            	con.query("SELECT expected_output FROM problem WHERE problemId = " + pnum, function (err, result1, fields) {
     			 if (err) throw err;
     			 //console.log(result1[0].expected_output)
      				var expectedoutput = result1[0].expected_output;
-				 
+			       	var actualoutput = result.stdout
 
-            	var actualoutput = result.stdout
-            	console.log(actualoutput.substring(actualoutput.length-2, actualoutput.length))
-            	//if(actualoutput.substring(actualoutput.length-2, actualoutput.length)=="\\n")
-            	//	actualoutput = actualoutput.substring(actualoutput.length-2, actualoutput.length);
+			       	console.log(expectedoutput)
+			       	console.log(actualoutput)
+
             	if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
             	{
             		res.send('You got it!');
@@ -89,7 +86,7 @@ con.connect(function(err) {
    if (err) throw err;
 });
 app.get('/problems', function(req, res){
-   con.query("SELECT id, Title FROM problem", function (err, result, fields) {
+   con.query("SELECT ProblemId, title FROM problem", function (err, result, fields) {
      if (err) throw err;
       res.render('ProblemList', { problemList: result });
     });
@@ -99,9 +96,10 @@ app.get('/problems', function(req, res){
 
 app.get('/challenge/:pnum', function(req, res){
 	var pnum = parseInt(req.params.pnum);
-   con.query("SELECT description, Title FROM problem WHERE id = " + pnum, function (err, result, fields) {
+   con.query("SELECT description, title FROM problem WHERE ProblemId = " + pnum, function (err, result, fields) {
      if (err) throw err;
      console.log(result)
+
       res.render('Description', { problemData: result });
     });
 });

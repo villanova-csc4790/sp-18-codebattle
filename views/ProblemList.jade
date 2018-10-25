@@ -2,9 +2,6 @@ doctype html
 html( lang="en")
 
 head
-	
-
-
 title Codebattles
 meta(charset='utf-8')
 meta(http-equiv='X-UA-Compatible', content='IE=edge')
@@ -22,8 +19,8 @@ div(class="table-responsive")
 		tbody
 			each item in problemList
 				tr(id="TableRow")
-					td=item.id
-					td=item.Title
+					td=item.ProblemId
+					td=item.title
 script(src="http://code.jquery.com/jquery-1.11.0.min.js")
 script.
 	$('#thetable').find('tr').click( function(){
