@@ -8,6 +8,7 @@ var myConnection  = require('express-myconnection')
 var path = require('path');
 var config = require('./config.js')
 const url = require('url')
+var router = express.Router();
 
 
 
@@ -23,16 +24,16 @@ app.use(myConnection(mysql, con, 'pool'))
 app.use(express.static('Static'));
 app.set('view engine', 'jade');
 
-app.post('/submitted', urlencodedParser, function(req, res){
+app.post('/submitted/:pnum', urlencodedParser, function(req, res){
+	var pnum = parseInt(req.params.pnum);
+	console.log(pnum);
     input = {
         source:req.body.editor
     };
     con.query("SELECT test_case FROM problem WHERE id = 1", function (err, result, fields) {
      if (err) throw err;
      var testcaseString = result[0].test_case;
-     console.log(testcaseString)
      var testcase = parseInt(testcaseString, 10)
-     console.log(testcase)
  	
 
     let resultPromise = java.runSource(input.source, {stdin:testcase})
@@ -41,7 +42,7 @@ app.post('/submitted', urlencodedParser, function(req, res){
             console.log(result);//result object
             if(result.exitCode == 0)
             {
-            	con.query("SELECT expected_output FROM problem WHERE id = 1", function (err, result1, fields) {
+            	con.query("SELECT expected_output FROM problem WHERE id = " + pnum, function (err, result1, fields) {
     			 if (err) throw err;
     			 //console.log(result1[0].expected_output)
      				var expectedoutput = result1[0].expected_output;
@@ -51,8 +52,6 @@ app.post('/submitted', urlencodedParser, function(req, res){
             	console.log(actualoutput.substring(actualoutput.length-2, actualoutput.length))
             	//if(actualoutput.substring(actualoutput.length-2, actualoutput.length)=="\\n")
             	//	actualoutput = actualoutput.substring(actualoutput.length-2, actualoutput.length);
-            	console.log(expectedoutput)
-            	console.log(actualoutput)
             	if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
             	{
             		res.send('You got it!');
@@ -67,7 +66,6 @@ app.post('/submitted', urlencodedParser, function(req, res){
         })
         .catch(err => {
             console.log(err);
-            console.log('Compilation Failed');
             res.send("Compilation Failed");
         });
             		});
@@ -99,8 +97,9 @@ app.get('/problems', function(req, res){
 
 })
 
-app.get('/challenge1', function(req, res){
-   con.query("SELECT description, Title FROM problem WHERE id = 1", function (err, result, fields) {
+app.get('/challenge/:pnum', function(req, res){
+	var pnum = parseInt(req.params.pnum);
+   con.query("SELECT description, Title FROM problem WHERE id = " + pnum, function (err, result, fields) {
      if (err) throw err;
      console.log(result)
       res.render('Description', { problemData: result });
