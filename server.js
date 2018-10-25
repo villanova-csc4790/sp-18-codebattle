@@ -91,7 +91,7 @@ con.connect(function(err) {
 app.get('/problems', function(req, res){
    con.query("SELECT id, Title FROM problem", function (err, result, fields) {
      if (err) throw err;
-      res.render('StudentList', { problemList: result });
+      res.render('ProblemList', { problemList: result });
     });
     
 
