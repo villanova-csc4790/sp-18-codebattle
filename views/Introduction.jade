@@ -1,0 +1,28 @@
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title CodeBattles
+    meta(name='description', content='')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(href='/css/custom.css' rel='stylesheet')
+    link(href='/css/bootstrap.min.css', rel='stylesheet')
+    script(src='/js/GetProblemID.js').
+  body
+     each item in problemTitle
+        h1=item.title
+        div
+         p Before solving this problem, input a username. This may be used to display your result on a leaderboard.
+
+         |Your time will start when you click the button below.
+
+
+
+        div
+         form(method="POST", action='/challenge/'+item.ProblemId)
+          h5 Username
+           input#username(type='text' name='username')
+          button#Start_Problem.btn.btn-primary Start
+
+
+

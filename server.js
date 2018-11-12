@@ -18,7 +18,7 @@ var con = mysql.createConnection({
    password: config.database.password,
    port: config.database.port,
    database: config.database.db
-    });
+ });
 
 app.use(myConnection(mysql, con, 'pool'))
 app.use(express.static('Static'));
@@ -93,14 +93,40 @@ app.get('/problems', function(req, res){
     
 
 })
-
-app.get('/challenge/:pnum', function(req, res){
+app.get('/challenge/intro/:pnum', function(req,res){
 	var pnum = parseInt(req.params.pnum);
-   con.query("SELECT description, title FROM problem WHERE ProblemId = " + pnum, function (err, result, fields) {
-     if (err) throw err;
-     console.log(result)
+	con.query("SELECT ProblemId, title FROM problem WHERE ProblemId = " + pnum, function (err, result, fields) {
+		if (err) throw err
+			res.render('Introduction', {problemTitle: result});
+});
+});
 
-      res.render('Description', { problemData: result });
+/*app.post('/username/:pnum', urlencodedParser, function(req,res){
+	var username = req.body.username;
+	var d = new Date();
+	var starttime = d.getTime();
+	con.query("INSERT INTO Attempts('username', 'Problem', 'StartTime', 'Attempts') VALUES('"+username+"',"+req.params.pnum+", "+starttime+", 1", function(err,result,fields) {
+		if (err) throw err
+	});
+});
+*/	
+
+app.post('/challenge/:pnum', urlencodedParser, function(req, res){
+	var pnum = parseInt(req.params.pnum);
+	var username = req.body.username;
+	var d = new Date();
+	var starttime = d.getTime();
+	con.query("INSERT INTO Attempt(username,Problem,StartTime,Attempts) VALUES('"+username+"',"+pnum+", "+starttime+", 1)", function(err,result,fields) {
+		if (err) throw err
+	});
+
+    con.query("SELECT description, title FROM problem WHERE ProblemId = " + pnum, function (err1, result1, fields1) {
+     if (err1) throw err1
+     con.query("SELECT AttemptId, username FROM Attempt WHERE username='"+username+"' AND StartTime="+starttime, function(err2, result2, fields2){
+     	if (err2) throw err2
+     	      res.render('Description', { problemData: result1, attemptData: result2});
+     });
+
     });
 });
 

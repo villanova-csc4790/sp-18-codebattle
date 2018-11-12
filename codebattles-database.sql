@@ -1,3 +1,4 @@
+DROP TABLE problems.Attempt;
 DROP TABLE problems.problem;
 
 CREATE TABLE problems.problem 
@@ -7,8 +8,20 @@ CREATE TABLE problems.problem
     test_case VARCHAR(5000) NOT NULL,      
     expected_output VARCHAR(5000) NOT NULL,
     title VARCHAR(100) NOT NULL,
-    CONSTRAINT PROBLEM_PK PRIMARY KEY (ProblemId)
+    PRIMARY KEY (ProblemId)
     );
+
+CREATE TABLE problems.Attempt
+(
+	AttemptId INT NOT NULL AUTO_INCREMENT,
+	username VARCHAR(50) NOT NULL,
+	Problem INT NOT NULL,
+	StartTime BIGINT, 
+	EndTime BIGINT,
+	Attempts INT,
+	FOREIGN KEY (Problem) references problem(ProblemId),
+	PRIMARY KEY (AttemptId)
+);
 
 INSERT INTO problems.problem (description,test_case,expected_output,title)
 Values('Write a program that outputs the string representation of numbers from 1 to n.  
@@ -29,7 +42,7 @@ Buzz
 Fizz
 13
 14
-Fizz
+FizzBuzz
 ','FizzBuzz');
 
 INSERT INTO problems.problem (description,test_case,expected_output,title)

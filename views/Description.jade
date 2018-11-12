@@ -20,11 +20,14 @@ html
     script(async='', defer='').
     script(src='/CodeMirror/addon/edit/matchbrackets.js')
     script(src='/CodeMirror/addon/edit/closebrackets.js')
-    form(action='/problems', method='GET')
-      button#list_problems.btn.btn-primary(href='/problems') View Problems
+
+    button#list_problems.btn.btn-primary(onclick="location.href='/problems'") View Problems
     #text_editor
       | Input Code Here
       form(name = 'user_code' onsubmit="return getSubmittedURL()", method='POST')
+        each item in attemptData
+         input#username(type="hidden" value=item.username name="username")
+         input#attemptid(type="hidden" value=item.AttemptId name="attemptid")
         #editordiv
           textarea#editor(name='editor')
             | public class CodeBattles{
