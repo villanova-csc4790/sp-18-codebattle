@@ -1,0 +1,29 @@
+doctype html
+html( lang="en")
+
+head
+title Codebattles
+meta(charset='utf-8')
+meta(http-equiv='X-UA-Compatible', content='IE=edge')
+meta(name='viewport', content='width=device-width, initial-scale=1.0')
+meta(name='description', content='')
+link(href="css/bootstrap.min.css", rel="stylesheet")
+
+body
+h1 Problem List
+div(class="table-responsive")
+	table(class="table table-hover" id="thetable")
+		thead
+			th Problem #
+			th problem Name
+		tbody
+			each item in problemList
+				tr(id="TableRow")
+					td=item.ProblemId
+					td=item.title
+script(src="http://code.jquery.com/jquery-1.11.0.min.js")
+script.
+	$('#thetable').find('tr').click( function(){
+	var rowclicked = ($(this).index()+1);
+	location.href='/challenge/'+rowclicked;
+	});

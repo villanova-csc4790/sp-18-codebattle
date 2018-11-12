@@ -1,0 +1,35 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title CodeBattles
+    meta(name='description', content='')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(href='/css/custom.css' rel='stylesheet')
+    link(href='/css/bootstrap.min.css', rel='stylesheet')
+    script(src='/js/GetProblemID.js').
+  body
+    div
+     each item in problemData
+      h1=item.title
+      p.=item.description
+    script(src='/CodeMirror/lib/codemirror.js')
+    link(rel='stylesheet', href='/CodeMirror/lib/codemirror.css')
+    script(src='/CodeMirror/mode/clike/clike.js')
+    script(async='', defer='').
+    script(src='/CodeMirror/addon/edit/matchbrackets.js')
+    script(src='/CodeMirror/addon/edit/closebrackets.js')
+    form(action='/problems', method='GET')
+      button#list_problems.btn.btn-primary(href='/problems') View Problems
+    #text_editor
+      | Input Code Here
+      form(name = 'user_code' onsubmit="return getSubmittedURL()", method='POST')
+        #editordiv
+          textarea#editor(name='editor')
+            | public class CodeBattles{
+            | public static void main (String[] args){
+            | }}
+          button#submit_code.btn.btn-secondary(type='submit') Submit Code
+    script(src='/js/index.js')
+
