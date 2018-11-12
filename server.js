@@ -57,18 +57,17 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
             	 	con.query("UPDATE Attempt Set EndTime ="+endtime+" WHERE AttemptId="+req.body.attemptid+" AND EndTime IS NULL", function(err,result,fields){
     				if(err) throw err;
    				 	});
-            	 	con.query("SELECT StartTime, EndTime, Attempts, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
+            	 	con.query("SELECT StartTime, EndTime, Attempts, Problem, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
             	 		var totaltime =  (result[0].EndTime-result[0].StartTime)+(result[0].Attempts-1)*300000;
             	 		Minutes = totaltime/60000;
             	 		Minutes = +Minutes.toFixed(2);
-            	 		con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
+            	 		con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem="+result[0].Problem+" ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
             	 			if(err) throw err;
             	 			for(var i =0;i<result2.length;i++){
             	 				var temp = result2[i].totaltime/60000;
             	 				temp = +temp.toFixed(2);
             	 				result2[i].totaltime = temp;
             	 			}
-            	 				console.log(result2);
    				 			res.render("SubmittedSuccess", {time: Minutes, username: result[0].username, leaders:result2});            	 			
             	 		});
             	 	});

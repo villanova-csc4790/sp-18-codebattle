@@ -12,6 +12,7 @@ html
   body
     div
     script(async='', defer='')
+        
     mixin Congratulations(name)
      h1 Congratulations #{name}
      h2 You got the right answer!
@@ -35,7 +36,7 @@ html
                     tbody
                         each item in leaders
                             tr
-                                td(class="col-1")=leaders.indexOf(item)
+                                td(class="col-1")=leaders.indexOf(item)+1
                                 td(class="col-3")=item.username
                                 td(class="col-2")=item.totaltime
 
