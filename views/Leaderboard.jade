@@ -5,31 +5,36 @@ html
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     title CodeBattles
     meta(name='description', content='')
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+    script(src='/js/bootstrap.bundle.min.js')
+
     meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='/css/custom.css' rel='stylesheet')
     link(href='/css/bootstrap.min.css', rel='stylesheet')
-    script(src='/js/GetProblemID.js').
+    script(src='/js/getLeaderboardURL.js').
   body
-    div
+    
+
     script(async='', defer='')
-    mixin LeaderboardButton(pnumber)
-     button(class="btn btn-primary" onclick="location.href='/leaderboard/'+#{pnumber}") Full Leaderboard
-    mixin Congratulations(name)
-     h1 Congratulations #{name}
-     h2 You got the right answer!
-     h2  
-    +Congratulations(username)
 
+    mixin problemDrop(pname)
+     li(onClick="return getLeaderboardURL()")
+        a(href="#") #{pname}
 
-    mixin displayTime(numMinutes)
-     h3 Your Time:
-     h4 #{time} minutes
-    +displayTime(time)
+    div.container
+        div.dropdown
+         button.btn.btn-primary.dropdown-toggle(type="button" data-toggle="dropdown") 
+          |Select Problem
+          span.caret
 
-    di(class="container")
-        div(class="row-justify-content-md-center")
-            div(class="col.col-6")
-                table(class="table-striped" id="Leaderboard")
+         ul#problemlist.dropdown-menu
+                each item in problems
+                 +problemDrop(item.title)
+
+    div.container
+        h1=curprob
+        div.row
+            div.col.col-12
+                table.table-striped#Leaderboard
                     thead
                      th(class="col-1") Rank
                      th(class="col-3") Username
@@ -42,8 +47,7 @@ html
                                 td(class="col-2")=item.totaltime
 
 
-    
-    button#problem_list.btn.btn-primary(onclick="location.href='/problems'") Problem List
-    +LeaderboardButton(problem)
+    div.container
+     button#problem_list.btn.btn-primary(onclick="location.href='/problems'") Problem List
     
 

@@ -61,14 +61,14 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
             	 		var totaltime =  (result[0].EndTime-result[0].StartTime)+(result[0].Attempts-1)*300000;
             	 		Minutes = totaltime/60000;
             	 		Minutes = +Minutes.toFixed(2);
-            	 		con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem="+result[0].Problem+" ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
+            	 		con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem=" + result[0].Problem + " ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
             	 			if(err) throw err;
             	 			for(var i =0;i<result2.length;i++){
             	 				var temp = result2[i].totaltime/60000;
             	 				temp = +temp.toFixed(2);
             	 				result2[i].totaltime = temp;
             	 			}
-   				 			res.render("SubmittedSuccess", {time: Minutes, username: result[0].username, leaders:result2});            	 			
+   				 			res.render("SubmittedSuccess", {time: Minutes, username: result[0].username, problem: result[0].Problem, leaders:result2});            	 			
             	 		});
             	 	});
 
@@ -130,6 +130,30 @@ app.get('/challenge/intro/:pnum', function(req,res){
 	});
 });
 */	
+app.get('/leaderboard/:pnum', function(req, res){
+	var pnum = parseInt(req.params.pnum)
+	var selected;
+	con.query("SELECT title FROM problem WHERE ProblemId="+pnum, function(err, result, fields){
+		if(err) throw err
+			selected = result[0].title;
+	});
+
+	con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem="+pnum+" ORDER BY totaltime ASC", function(err,result2,fields){
+        if(err) throw err;
+        for(var i =0;i<result2.length;i++){
+        	var temp = result2[i].totaltime/60000;
+        	temp = +temp.toFixed(2);
+        	result2[i].totaltime = temp;
+        }
+        con.query("SELECT title FROM problem ORDER BY ProblemId ASC", function(err1,result1,fields1){
+        	if(err) throw err
+        	res.render("Leaderboard", {leaders:result2, problems: result1, curprob: selected});
+        });
+
+	});
+});
+
+
 
 app.post('/challenge/:pnum', urlencodedParser, function(req, res){
 	var pnum = parseInt(req.params.pnum);
