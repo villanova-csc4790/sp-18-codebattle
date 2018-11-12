@@ -48,17 +48,17 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
 
 			       	console.log(expectedoutput)
 			       	console.log(actualoutput)
-
+                
             	if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
             	{
-            		res.send('You got it!');
+            	 res.render("SubmittedSuccess")
             	}
             	else
-            		res.send('You suck.');
+                res.render("SubmittedFail",{error:"Wrong Answer"})
             	});
             }
             else
-                res.send('Compilation Failed');
+                res.render('SubmittedFail',{error: "Compilation Failed"});
             
         })
         .catch(err => {
@@ -68,7 +68,7 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
             		});
             		
 
-        
+                   
 })
 
         //app.get('/submitted', function (req, res) {
