@@ -61,9 +61,16 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
             	 		var totaltime =  (result[0].EndTime-result[0].StartTime)+(result[0].Attempts-1)*300000;
             	 		Minutes = totaltime/60000;
             	 		Minutes = +Minutes.toFixed(2);
-
-
-   				 		res.render("SubmittedSuccess", {time: Minutes, username: result[0].username});
+            	 		con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
+            	 			if(err) throw err;
+            	 			for(var i =0;i<result2.length;i++){
+            	 				var temp = result2[i].totaltime/60000;
+            	 				temp = +temp.toFixed(2);
+            	 				result2[i].totaltime = temp;
+            	 			}
+            	 				console.log(result2);
+   				 			res.render("SubmittedSuccess", {time: Minutes, username: result[0].username, leaders:result2});            	 			
+            	 		});
             	 	});
 
             	}

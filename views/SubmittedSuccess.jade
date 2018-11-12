@@ -16,18 +16,28 @@ html
      h1 Congratulations #{name}
      h2 You got the right answer!
      h2  
-     h2  
     +Congratulations(username)
 
 
     mixin displayTime(numMinutes)
-     h3 Total Time:
+     h3 Your Time:
      h4 #{time} minutes
-
-
     +displayTime(time)
-
-
+    
+    di(class="container")
+        div(class="row-justify-content-md-center")
+            div(class="col.col-6")
+                table(class="table-striped" id="Leaderboard")
+                    thead
+                     th(class="col-1") Rank
+                     th(class="col-3") Username
+                     th(class="col-2") Time (Minutes)
+                    tbody
+                        each item in leaders
+                            tr
+                                td(class="col-1")=leaders.indexOf(item)
+                                td(class="col-3")=item.username
+                                td(class="col-2")=item.totaltime
 
 
 
