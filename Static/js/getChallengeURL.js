@@ -1,5 +1,5 @@
-function getSubmittedURL(){
+function getChallengeURL(){
 	var patharray = window.location.pathname.split('/');
 	var ProblemID = patharray[patharray.length-1];
-	document.user_code.action = "/submitted/" + ProblemID;
+	document.Try_Again.action = "/challenge/" + ProblemID;
 }

@@ -29,10 +29,8 @@ html
          input#username(type="hidden" value=item.username name="username")
          input#attemptid(type="hidden" value=item.AttemptId name="attemptid")
         #editordiv
-          textarea#editor(name='editor')
-            | public class CodeBattles{
-            | public static void main (String[] args){
-            | }}
+          textarea#editor(name='editor')=source
+
           button#submit_code.btn.btn-secondary(type='submit') Submit Code
     script(src='/js/index.js')
 

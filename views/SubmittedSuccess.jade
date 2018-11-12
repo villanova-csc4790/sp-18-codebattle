@@ -12,7 +12,25 @@ html
   body
     div
     script(async='', defer='')
-    h1=You got the right answer!
+    mixin Congratulations(name)
+     h1 Congratulations #{name}
+     h2 You got the right answer!
+     h2  
+     h2  
+    +Congratulations(username)
+
+
+    mixin displayTime(numMinutes)
+     h3 Total Time:
+     h4 #{time} minutes
+
+
+    +displayTime(time)
+
+
+
+
+
     button#problem_list.btn.btn-primary(onclick="location.href='/problems'") Problem List
     
 

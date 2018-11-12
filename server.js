@@ -30,6 +30,10 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
     input = {
         source:req.body.editor
     };
+    con.query("UPDATE Attempt Set SourceCode ='"+input.source+"' WHERE AttemptId="+req.body.attemptid, function(err,result,fields){
+    	if(err) throw err;
+    });
+
     con.query("SELECT test_case FROM problem WHERE ProblemId = "+pnum, function (err, result, fields) {
      if (err) throw err;
      var testcase = result[0].test_case;
@@ -45,20 +49,30 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
     			 //console.log(result1[0].expected_output)
      				var expectedoutput = result1[0].expected_output;
 			       	var actualoutput = result.stdout
-
-			       	console.log(expectedoutput)
-			       	console.log(actualoutput)
                 
             	if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
             	{
-            	 res.render("SubmittedSuccess")
+            		var ed = new Date();
+            		endtime = ed.getTime();
+            	 	con.query("UPDATE Attempt Set EndTime ="+endtime+" WHERE AttemptId="+req.body.attemptid+" AND EndTime IS NULL", function(err,result,fields){
+    				if(err) throw err;
+   				 	});
+            	 	con.query("SELECT StartTime, EndTime, Attempts, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
+            	 		var totaltime =  (result[0].EndTime-result[0].StartTime)+(result[0].Attempts-1)*300000;
+            	 		Minutes = totaltime/60000;
+            	 		Minutes = +Minutes.toFixed(2);
+
+
+   				 		res.render("SubmittedSuccess", {time: Minutes, username: result[0].username});
+            	 	});
+
             	}
             	else
-                res.render("SubmittedFail",{error:"Wrong Answer"})
+                res.render("SubmittedFail",{error:"Wrong Answer", AttemptId: req.body.attemptid, username: req.body.username})
             	});
             }
             else
-                res.render('SubmittedFail',{error: "Compilation Failed"});
+                res.render('SubmittedFail',{error: "Compilation Failed", AttemptId: req.body.attemptid, username: req.body.username});
             
         })
         .catch(err => {
@@ -114,17 +128,35 @@ app.get('/challenge/intro/:pnum', function(req,res){
 app.post('/challenge/:pnum', urlencodedParser, function(req, res){
 	var pnum = parseInt(req.params.pnum);
 	var username = req.body.username;
+	var attemptid = req.body.attemptid;
 	var d = new Date();
 	var starttime = d.getTime();
-	con.query("INSERT INTO Attempt(username,Problem,StartTime,Attempts) VALUES('"+username+"',"+pnum+", "+starttime+", 1)", function(err,result,fields) {
+	
+	if(attemptid == null){
+		con.query("INSERT INTO Attempt(username,Problem,StartTime,Attempts) VALUES('"+username+"',"+pnum+", "+starttime+", 1)", function(err,result,fields) {
 		if (err) throw err
-	});
+		console.log(result)
+		attemptid = result.insertId;
+		});
+	}
+
+	else{
+		con.query("UPDATE Attempt SET Attempts=Attempts+1 WHERE AttemptId="+attemptid, function(err, result, fields){
+			if(err) throw err
+		});
+	}
+
 
     con.query("SELECT description, title FROM problem WHERE ProblemId = " + pnum, function (err1, result1, fields1) {
      if (err1) throw err1
-     con.query("SELECT AttemptId, username FROM Attempt WHERE username='"+username+"' AND StartTime="+starttime, function(err2, result2, fields2){
+     con.query("SELECT AttemptId, username, SourceCode FROM Attempt WHERE username='"+username+"' AND AttemptId="+attemptid, function(err2, result2, fields2){
      	if (err2) throw err2
-     	      res.render('Description', { problemData: result1, attemptData: result2});
+     		Source = result2[0].SourceCode;
+     		if(Source== null){
+     			Source = "public class CodeBattles{\npublic static void main (String[] args){\n}}"
+     		}
+
+     	      res.render('Description', { problemData: result1, attemptData: result2, source: Source});
      });
 
     });

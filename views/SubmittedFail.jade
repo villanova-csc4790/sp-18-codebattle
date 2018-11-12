@@ -8,12 +8,19 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(href='/css/custom.css' rel='stylesheet')
     link(href='/css/bootstrap.min.css', rel='stylesheet')
-    script(src='/js/GetProblemID.js').
+    script(src='/js/getChallengeURL.js').
   body
     div
     script(async='', defer='')
     h1=error
-    button#problem_list.btn.btn-primary(onclick="location.href='/problems'") Problem List
+    form(name = "Try_Again", onsubmit = "return getChallengeURL()", method = "POST")
+     input#username(type="hidden" value=username name="username")
+     input#attemptid(type="hidden" value=AttemptId name="attemptid")
+     button#try_again.btn.btn-primary(type='submit') Try Problem Again
+    button#problem_list.btn.btn-danger(onclick="location.href='/problems'") Try Another Problem
+
+
+
     
     
 

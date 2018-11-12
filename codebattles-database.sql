@@ -19,6 +19,7 @@ CREATE TABLE problems.Attempt
 	StartTime BIGINT, 
 	EndTime BIGINT,
 	Attempts INT,
+	SourceCode VARCHAR(10000),
 	FOREIGN KEY (Problem) references problem(ProblemId),
 	PRIMARY KEY (AttemptId)
 );
