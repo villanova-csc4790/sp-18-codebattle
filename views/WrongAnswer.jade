@@ -12,15 +12,14 @@ html
   body
     div
     script(async='', defer='')
-    mixin typeOfError(type)
-     h2 Your code has an error.
-     h3 Error Type: #{type}
-
-    +typeOfError(error)
+    h1 Wrong Answer
+    h3 But don't give up. 
+    h3 You can try again.
     form(name = "Try_Again", onsubmit = "return getChallengeURL()", method = "POST")
      input#username(type="hidden" value=username name="username")
      input#attemptid(type="hidden" value=AttemptId name="attemptid")
      button#try_again.btn.btn-primary(type='submit') Try Problem Again
+    h4 
     button#problem_list.btn.btn-danger(onclick="location.href='/problems'") Try Another Problem
 
 

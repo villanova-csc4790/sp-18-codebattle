@@ -27,15 +27,22 @@ app.set('view engine', 'jade');
 app.post('/submitted/:pnum', urlencodedParser, function(req, res){
 	var pnum = parseInt(req.params.pnum);
 	console.log(pnum);
+
+	con.query("UPDATE Attempt SET Attempts=Attempts+1 WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
+			if(err) throw err
+		});
+
     input = {
         source:req.body.editor
     };
+
     con.query("UPDATE Attempt Set SourceCode ='"+input.source+"' WHERE AttemptId="+req.body.attemptid, function(err,result,fields){
     	if(err) throw err;
     });
 
     con.query("SELECT test_case FROM problem WHERE ProblemId = "+pnum, function (err, result, fields) {
      if (err) throw err;
+
      var testcase = result[0].test_case;
 
     let resultPromise = java.runSource(input.source, {stdin:testcase})
@@ -45,40 +52,47 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
             if(result.exitCode == 0)
             {
             	con.query("SELECT expected_output FROM problem WHERE problemId = " + pnum, function (err, result1, fields) {
-    			 if (err) throw err;
-    			 //console.log(result1[0].expected_output)
+    			 	if (err) throw err;
+
      				var expectedoutput = result1[0].expected_output;
 			       	var actualoutput = result.stdout
                 
-            	if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
-            	{
-            		var ed = new Date();
-            		endtime = ed.getTime();
-            	 	con.query("UPDATE Attempt Set EndTime ="+endtime+" WHERE AttemptId="+req.body.attemptid+" AND EndTime IS NULL", function(err,result,fields){
-    				if(err) throw err;
-   				 	});
-            	 	con.query("SELECT StartTime, EndTime, Attempts, Problem, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
-            	 		var totaltime =  (result[0].EndTime-result[0].StartTime)+(result[0].Attempts-1)*300000;
-            	 		Minutes = totaltime/60000;
-            	 		Minutes = +Minutes.toFixed(2);
-            	 		con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem=" + result[0].Problem + " ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
-            	 			if(err) throw err;
-            	 			for(var i =0;i<result2.length;i++){
-            	 				var temp = result2[i].totaltime/60000;
-            	 				temp = +temp.toFixed(2);
-            	 				result2[i].totaltime = temp;
-            	 			}
-   				 			res.render("SubmittedSuccess", {time: Minutes, username: result[0].username, problem: result[0].Problem, leaders:result2});            	 			
-            	 		});
-            	 	});
+            		if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
+            		{
+            			var ed = new Date();
+            			endtime = ed.getTime();
 
-            	}
-            	else
-                res.render("SubmittedFail",{error:"Wrong Answer", AttemptId: req.body.attemptid, username: req.body.username})
-            	});
+            	 		con.query("UPDATE Attempt Set EndTime ="+endtime+" WHERE AttemptId="+req.body.attemptid+" AND EndTime IS NULL", function(err,result,fields){
+    					if(err) throw err;
+   				 		});
+
+            	 		con.query("SELECT StartTime, EndTime, Attempts, Problem, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
+            	 			var totaltime =  (result[0].EndTime-result[0].StartTime)+(result[0].Attempts-1)*300000;
+            	 			Minutes = totaltime/60000;
+            	 			Minutes = +Minutes.toFixed(2);
+
+            	 			con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem=" + result[0].Problem + " AND EndTime IS NOT NULL ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
+            	 				if(err) throw err;
+            	 				for(var i =0;i<result2.length;i++){
+            	 					var temp = result2[i].totaltime/60000;
+            	 					temp = +temp.toFixed(2);
+            	 					result2[i].totaltime = temp;
+            	 				}
+   				 				res.render("SubmittedSuccess", {time: Minutes, username: result[0].username, problem: result[0].Problem, leaders:result2});            	 			
+            	 			});
+            	 		});
+
+            		}
+            		else if(result.errorType != null){
+                		res.render('SubmittedFail',{error: result.errorType, AttemptId: req.body.attemptid, username: req.body.username});
+                	}
+                	else{
+ 	         			res.render("WrongAnswer",{AttemptId: req.body.attemptid, username: req.body.username})
+            		}            	
+            		});
             }
             else
-                res.render('SubmittedFail',{error: "Compilation Failed", AttemptId: req.body.attemptid, username: req.body.username});
+                res.render('SubmittedFail',{error: result.errorType, AttemptId: req.body.attemptid, username: req.body.username});
             
         })
         .catch(err => {
@@ -138,7 +152,7 @@ app.get('/leaderboard/:pnum', function(req, res){
 			selected = result[0].title;
 	});
 
-	con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem="+pnum+" ORDER BY totaltime ASC", function(err,result2,fields){
+	con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem="+pnum+" AND EndTime IS NOT NULL ORDER BY totaltime ASC", function(err,result2,fields){
         if(err) throw err;
         for(var i =0;i<result2.length;i++){
         	var temp = result2[i].totaltime/60000;
@@ -163,7 +177,7 @@ app.post('/challenge/:pnum', urlencodedParser, function(req, res){
 	var starttime = d.getTime();
 	
 	if(attemptid == null){
-		con.query("INSERT INTO Attempt(username,Problem,StartTime,Attempts) VALUES('"+username+"',"+pnum+", "+starttime+", 1)", function(err,result,fields) {
+		con.query("INSERT INTO Attempt(username,Problem,StartTime,Attempts) VALUES('"+username+"',"+pnum+", "+starttime+", 0)", function(err,result,fields) {
 		if (err) throw err
 		console.log(result)
 		attemptid = result.insertId;
@@ -171,9 +185,7 @@ app.post('/challenge/:pnum', urlencodedParser, function(req, res){
 	}
 
 	else{
-		con.query("UPDATE Attempt SET Attempts=Attempts+1 WHERE AttemptId="+attemptid, function(err, result, fields){
-			if(err) throw err
-		});
+		
 	}
 
 
