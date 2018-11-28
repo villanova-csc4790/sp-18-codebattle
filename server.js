@@ -9,6 +9,7 @@ var path = require('path');
 var config = require('./config.js')
 const url = require('url')
 var router = express.Router();
+var async = require('async');
 
 
 
@@ -26,7 +27,11 @@ app.set('view engine', 'jade');
 
 app.post('/submitted/:pnum', urlencodedParser, function(req, res){
 	var pnum = parseInt(req.params.pnum);
-	console.log(pnum);
+	var numCases = 0;
+	var numPassed = 0;
+	var TypeOfError;
+	var wrong = false;
+	var fail = false;
 
 	con.query("UPDATE Attempt SET Attempts=Attempts+1 WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
 			if(err) throw err
@@ -40,69 +45,108 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
     	if(err) throw err;
     });
 
-    con.query("SELECT test_case FROM problem WHERE ProblemId = "+pnum, function (err, result, fields) {
-     if (err) throw err;
 
-     var testcase = result[0].test_case;
+    con.query("SELECT CaseId, Input FROM TestCases WHERE ProblemId = "+pnum+" ORDER BY CaseId", function (testerr, tests, fields) {
+    	if(testerr) throw testerr;
+    	numCases = tests.length;
 
-    let resultPromise = java.runSource(input.source, {stdin:testcase})
-    resultPromise
-        .then(result => {
-            console.log(result);//result object
-            if(result.exitCode == 0)
-            {
-            	con.query("SELECT expected_output FROM problem WHERE problemId = " + pnum, function (err, result1, fields) {
-    			 	if (err) throw err;
 
-     				var expectedoutput = result1[0].expected_output;
-			       	var actualoutput = result.stdout
-                
-            		if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
-            		{
-            			var ed = new Date();
-            			endtime = ed.getTime();
+    	async.eachSeries(tests, function(test, callback){
+    		var testcase = test.Input;
+    		var caseid = test.CaseId;
+		    console.log(wrong+ " " + fail)
+		   	if(wrong  == false && fail == false)
+		   	{
+		   		console.log(numPassed);
 
-            	 		con.query("UPDATE Attempt Set EndTime ="+endtime+" WHERE AttemptId="+req.body.attemptid+" AND EndTime IS NULL", function(err,result,fields){
-    					if(err) throw err;
-   				 		});
+		    	let resultPromise = java.runSource(input.source, {stdin:testcase})
+		    	resultPromise
+	        	.then(result => {
+	            	console.log(result);//result object
+	      			console.log(tests);
 
-            	 		con.query("SELECT StartTime, EndTime, Attempts, Problem, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
-            	 			var totaltime =  (result[0].EndTime-result[0].StartTime)+(result[0].Attempts-1)*300000;
-            	 			Minutes = totaltime/60000;
-            	 			Minutes = +Minutes.toFixed(2);
+	            	if(result.exitCode == 0)
+	            	{
+			        	con.query("SELECT expected_output FROM TestCases WHERE CaseId = "+caseid, function (err1, result1, fields) {
+						 	if (err1) throw err1;
+			 				var expectedoutput = result1[0].expected_output.replace(/[\n\r]/g, '');
+					       	var actualoutput = result.stdout.replace(/[\n\r]/g, '');
+			            	
+			            	console.log(actualoutput);
+			            	console.log(expectedoutput);
+			        		if(actualoutput == expectedoutput || actualoutput == expectedoutput + '\n')
+			        		{
+			        			numPassed=numPassed+1;
+								if(numPassed == numCases)
+								{
+									var ed = new Date();
+									var endtime = ed.getTime();
+									con.query("UPDATE Attempt Set EndTime ="+endtime+" WHERE AttemptId="+req.body.attemptid+" AND EndTime IS NULL", function(err2,result2,fields2){
+										if(err2) throw err2;
+									});
 
-            	 			con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem=" + result[0].Problem + " AND EndTime IS NOT NULL ORDER BY totaltime ASC LIMIT 10", function(err,result2,fields){
-            	 				if(err) throw err;
-            	 				for(var i =0;i<result2.length;i++){
-            	 					var temp = result2[i].totaltime/60000;
-            	 					temp = +temp.toFixed(2);
-            	 					result2[i].totaltime = temp;
-            	 				}
-   				 				res.render("SubmittedSuccess", {time: Minutes, username: result[0].username, problem: result[0].Problem, leaders:result2});            	 			
-            	 			});
-            	 		});
+									con.query("SELECT StartTime, EndTime, Attempts, Problem, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err3, result3, fields3){
+										if (err3) throw err3
+										var totaltime =  (result3[0].EndTime-result3[0].StartTime)+(result3[0].Attempts-1)*300000;
+										Minutes = totaltime/60000;
+										Minutes = +Minutes.toFixed(2);
+													con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem=" + pnum + " AND EndTime IS NOT NULL ORDER BY totaltime ASC LIMIT 10", function(err4,result4,fields4){
+														if(err4) throw err4;
+														for(var j =0;j<result4.length;j++){
+															var temp = result4[j].totaltime/60000;
+															temp = +temp.toFixed(2);
+															result4[j].totaltime = temp;
+														}
+													res.render("SubmittedSuccess", {time: Minutes, username: result3[0].username, problem: result3[0].Problem, leaders:result4});            	 			
+													});
+										});
+								}
+								callback();
+			        		}
+			        		else if(result.errorType != null){
+			        			fail = true;
+			        			TypeOfError = result.errorType;
+			        			res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});
+								callback(); 
+							}
+			            	
+			            	else{
+			            		wrong = true;
+			            		res.render("WrongAnswer", {AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});   
+								callback(); 
+			        		}    
+			        		        	
+			        	
+			        	});
+			        }
+					else if(result.exitCode == 143)
+			       		{
+			       			fail = true;
+			       			TypeOfError = 'Too Much Time';
+			        		res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});
+							callback(); 
+			       		}
+			        else
+			        {
+			        	fail = true;
+			        	TypeOfError = result.errorType;
+			        	res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});
+						callback(); 
+			        }    
 
-            		}
-            		else if(result.errorType != null){
-                		res.render('SubmittedFail',{error: result.errorType, AttemptId: req.body.attemptid, username: req.body.username});
-                	}
-                	else{
- 	         			res.render("WrongAnswer",{AttemptId: req.body.attemptid, username: req.body.username})
-            		}            	
-            		});
-            }
-            else
-                res.render('SubmittedFail',{error: result.errorType, AttemptId: req.body.attemptid, username: req.body.username});
-            
-        })
-        .catch(err => {
-            console.log(err);
-            res.send("Compilation Failed");
-        });
-            		});
-            		
+			    })
+			    .catch(err => {
+			        console.log(err);
+			        res.send("Compiler Error");
+			        callback(); 
 
-                   
+			    });
+			}
+			else{
+				callback();
+			}
+    	})
+   });             
 })
 
         //app.get('/submitted', function (req, res) {
@@ -179,7 +223,6 @@ app.post('/challenge/:pnum', urlencodedParser, function(req, res){
 	if(attemptid == null){
 		con.query("INSERT INTO Attempt(username,Problem,StartTime,Attempts) VALUES('"+username+"',"+pnum+", "+starttime+", 0)", function(err,result,fields) {
 		if (err) throw err
-		console.log(result)
 		attemptid = result.insertId;
 		});
 	}

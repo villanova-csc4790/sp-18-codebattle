@@ -12,11 +12,33 @@ html
   body
     div
     script(async='', defer='')
-    mixin typeOfError(type)
-     h2 Your code has an error.
-     h3 Error Type: #{type}
+    h2 Your code has an error.
 
-    +typeOfError(error)
+    div(class="table-responsive")
+     table(class="table table-hover")
+      thead
+       th Test Case #
+       th Status
+      tbody
+       - var n = 1
+       - var m = numPassed+2
+
+       while n <= numPassed
+        tr
+         td=n+1
+         td Passed
+         - n++
+
+       tr
+        td  #{n}
+        td  #{error}
+
+       while m <= numCases
+        tr
+         td=m
+         td Not Attempted
+         - m++ 
+
     form(name = "Try_Again", onsubmit = "return getChallengeURL()", method = "POST")
      input#username(type="hidden" value=username name="username")
      input#attemptid(type="hidden" value=AttemptId name="attemptid")

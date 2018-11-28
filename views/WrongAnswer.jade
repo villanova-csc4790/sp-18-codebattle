@@ -15,15 +15,35 @@ html
     h1 Wrong Answer
     h3 But don't give up. 
     h3 You can try again.
+    
+    div(class="table-responsive")
+     table(class="table table-hover")
+      thead
+       th Test Case #
+       th Status
+      tbody
+       - var n = 1
+       - var m = numPassed+2
+
+       while n <= numPassed
+        tr
+         td=n+1
+         td Passed
+         - n++
+
+       tr
+        td  #{n}
+        td  Wrong Answer
+
+       while m <= numCases
+        tr
+         td=m
+         td Not Attempted
+         - m++
+
     form(name = "Try_Again", onsubmit = "return getChallengeURL()", method = "POST")
      input#username(type="hidden" value=username name="username")
      input#attemptid(type="hidden" value=AttemptId name="attemptid")
-     button#try_again.btn.btn-primary(type='submit') Try Problem Again
-    h4 
+     button#try_again.btn.btn-primary(type='submit') Try Problem Again     
     button#problem_list.btn.btn-danger(onclick="location.href='/problems'") Try Another Problem
-
-
-
-    
-    
 

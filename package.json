@@ -4,6 +4,7 @@
   "description": "sp-18-codebattle created by GitHub Classroom Jacob Kulanko & Zack Mateja",
   "main": "server.js",
   "dependencies": {
+    "async": "^2.6.1",
     "blint": "^1.0.3",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.1.3",

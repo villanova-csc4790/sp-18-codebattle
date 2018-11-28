@@ -1,3 +1,9 @@
 p, h1, h2{
 	white-space: pre-wrap;
 }
+
+table.center-table
+{
+  margin: 0 auto !important;
+  float: none !important;
+}
