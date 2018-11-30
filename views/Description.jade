@@ -30,9 +30,9 @@ html
     script(src='/CodeMirror/addon/edit/matchbrackets.js')
     script(src='/CodeMirror/addon/edit/closebrackets.js')
 
-    button#list_problems.btn.btn-primary(onclick="location.href='/problems'") View Problems
     #text_editor
-      | Input Code Here
+      h3
+        | Input Code Here
       form(name = 'user_code' onsubmit="return getSubmittedURL()", method='POST')
         each item in attemptData
          input#username(type="hidden" value=item.username name="username")

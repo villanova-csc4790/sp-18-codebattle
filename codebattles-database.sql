@@ -63,6 +63,11 @@ Example Output:
 
 0 1','Sum Two');
 
+
+
+INSERT INTO problems.TestCases(ProblemId,Input,expected_output)
+Values(1,1, '1');
+
 INSERT INTO problems.TestCases(ProblemId,Input,expected_output)
 Values(1,15, '1
 2
@@ -80,9 +85,6 @@ Fizz
 14
 FizzBuzz
 ');
-
-INSERT INTO problems.TestCases(ProblemId,Input,expected_output)
-Values(1,1, '1');
 
 INSERT INTO problems.TestCases(ProblemId,Input,expected_output)
 Values(1,30, '1

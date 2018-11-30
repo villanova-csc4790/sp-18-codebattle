@@ -36,7 +36,7 @@ html
 
        while n <= numPassed
         tr
-         td=n+1
+         td=n
          td Passed
          - n++
 
@@ -53,5 +53,19 @@ html
     form(name = "Try_Again", onsubmit = "return getChallengeURL()", method = "POST")
      input#username(type="hidden" value=username name="username")
      input#attemptid(type="hidden" value=AttemptId name="attemptid")
-     button#try_again.btn.btn-primary(type='submit') Try Problem Again     
+     button#try_again.btn.btn-primary(type='submit') Try Problem Again 
+
+    button#hintButton.btn.btn-danger(type='submit', onclick="getElementById('hintDiv').style.display = 'block'; this.style.display = 'none'") Get Hint
+    div#hintDiv.hidden
+     h5 
+      |This hint will show you the input used on the failed test case(case number 
+      strong #{numPassed+1}
+      |) There will be a 5 minute penalty for viewing this hint. Are you sure you want to continue?
+     button#yeshint.btn.btn-success(onclick="getElementById('HintText').style.display = 'block'; getElementById('hintDiv').style.display='none'; hintPenalty()") Yes
+     button#noHint.btn.btn-danger(onclick="getElementById('hintButton').style.display = 'block'; getElementById('hintDiv').style.display='none'") No
+
+    div#HintText.hidden
+     h5
+      |The input for test case #{numPassed+1} is
+     p #{FailedInput}    
 

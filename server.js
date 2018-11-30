@@ -11,8 +11,6 @@ const url = require('url')
 var router = express.Router();
 var async = require('async');
 
-
-
 var con = mysql.createConnection({
    host: config.database.host,
    user: config.database.user,
@@ -149,17 +147,10 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
    });             
 })
 
-        //app.get('/submitted', function (req, res) {
-        //  if (obj.exitCode == 1) {
-        //      res.send('Compilation failed')
-        //  } else {
-        //      res.send(obj.stdout);
-        //  }
-        //})
-
 app.listen(3000, function () {
  console.log('Example app listening on port 3000!')
 })
+
 con.connect(function(err) {
    if (err) throw err;
 });
@@ -175,10 +166,9 @@ app.get('/problems', function(req, res){
    con.query("SELECT ProblemId, title FROM problem", function (err, result, fields) {
      if (err) throw err;
       res.render('ProblemList', { problemList: result });
-    });
-    
-
+    });  
 })
+
 app.get('/challenge/intro/:pnum', function(req,res){
 	var pnum = parseInt(req.params.pnum);
 	con.query("SELECT ProblemId, title FROM problem WHERE ProblemId = " + pnum, function (err, result, fields) {

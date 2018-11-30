@@ -48,7 +48,7 @@ html
 
        while n <= numPassed
         tr
-         td=n+1
+         td=n
          td Passed
          - n++
 
@@ -68,10 +68,8 @@ html
      input#attemptid(type="hidden" value=AttemptId name="attemptid")
      button#try_again.btn.btn-primary(type='submit') Try Problem Again
 
-    // form(name = "Get_Hint", method = "POST")
-    // input#username(type="hidden" value=username name="username")
-    // input#attemptid(type="hidden" value=AttemptId name="attemptid")
-    button#hintButton.btn.btn-primary(type='submit', onclick="getElementById('hintDiv').style.display = 'block'; this.style.display = 'none'") Get Hint
+
+    button#hintButton.btn.btn-danger(type='submit', onclick="getElementById('hintDiv').style.display = 'block'; this.style.display = 'none'") Get Hint
     div#hintDiv.hidden
      h5 
       |This hint will show you the input used on the failed test case(case number 
