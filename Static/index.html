@@ -8,12 +8,16 @@
         <link href="css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
-        <div><h1>CodeBattles</h1></div>
+    <nav class = "navbar navbar-expand-sm bg-dark navbar-dark">
+            <a class = "navbar-brand" href = "/">CodeBattles</a>
+            <ul class = "nav navbar-nav">
+                <li class = "nav-item active"> <a class="nav-link" href = "/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href = "/problems">Problem List</a></li>
+                <li class="nav-item"><a class="nav-link" href = "/leaderboard/1">Leaderboard </a></li>
+            </ul>
+    </nav>
+
         <link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
         <script async defer></script>
-        <div class="btn-group">
-            <button id = "list_problems" class = "btn btn-primary" onclick="location.href='/problems'">View Problems</button>
-            <button id = "problem_leaderboards" class = "btn btn-secondary" onclick="location.href='/leaderboard/1'">View Leaderboards</button>
-        </div>
     </body>
 </html>

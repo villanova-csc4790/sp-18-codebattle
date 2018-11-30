@@ -106,13 +106,13 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
 			        		else if(result.errorType != null){
 			        			fail = true;
 			        			TypeOfError = result.errorType;
-			        			res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});
+			        			res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases, FailedInput: tests[numPassed].Input});
 								callback(); 
 							}
 			            	
 			            	else{
 			            		wrong = true;
-			            		res.render("WrongAnswer", {AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});   
+			            		res.render("WrongAnswer", {AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases, FailedInput: tests[numPassed].Input});   
 								callback(); 
 			        		}    
 			        		        	
@@ -123,14 +123,14 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
 			       		{
 			       			fail = true;
 			       			TypeOfError = 'Too Much Time';
-			        		res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});
+			        		res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases, FailedInput: tests[numPassed].Input});
 							callback(); 
 			       		}
 			        else
 			        {
 			        	fail = true;
 			        	TypeOfError = result.errorType;
-			        	res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases});
+			        	res.render("SubmittedFail",{error: TypeOfError, AttemptId: req.body.attemptid, username: req.body.username, numPassed: numPassed, numCases: numCases, FailedInput: tests[numPassed].Input});
 						callback(); 
 			        }    
 
@@ -163,6 +163,14 @@ app.listen(3000, function () {
 con.connect(function(err) {
    if (err) throw err;
 });
+
+app.post('/hint', urlencodedParser, function(req,res){
+	console.log(req)
+	con.query("UPDATE Attempt SET Attempts = Attempts+1 WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
+		if(err) throw err
+	}) 	
+});
+
 app.get('/problems', function(req, res){
    con.query("SELECT ProblemId, title FROM problem", function (err, result, fields) {
      if (err) throw err;

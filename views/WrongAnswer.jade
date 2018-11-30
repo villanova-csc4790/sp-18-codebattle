@@ -10,6 +10,15 @@ html
     link(href='/css/bootstrap.min.css', rel='stylesheet')
     script(src='/js/getChallengeURL.js').
   body
+    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
+      a.navbar-brand(href='/') CodeBattles
+      ul.nav.navbar-nav
+        li.nav-item
+          a.nav-link(href='/') Home
+        li.nav-item
+          a.nav-link(href='/problems') Problem List
+        li.nav-item
+          a.nav-link(href='/leaderboard/1') Leaderboard 
     div
     script(async='', defer='')
     h1 Wrong Answer
@@ -45,5 +54,4 @@ html
      input#username(type="hidden" value=username name="username")
      input#attemptid(type="hidden" value=AttemptId name="attemptid")
      button#try_again.btn.btn-primary(type='submit') Try Problem Again     
-    button#problem_list.btn.btn-danger(onclick="location.href='/problems'") Try Another Problem
 

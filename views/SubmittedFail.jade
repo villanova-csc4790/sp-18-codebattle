@@ -8,9 +8,32 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(href='/css/custom.css' rel='stylesheet')
     link(href='/css/bootstrap.min.css', rel='stylesheet')
-    script(src='/js/getChallengeURL.js').
+    script(src='/js/getChallengeURL.js')
+    script(src='/js/hint.js')
+    script(type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js")
+    //- script.
+    //-     $(document).ready(function(){
+    //-        $('Get_Hint').submit(function(){
+    //-             var formdata = $(this).serialize();
+    //-             $.ajax({
+    //-                 type: "POST",
+    //-                 url: "/hint",
+    //-                 data: formdata
+    //-             });
+    //-             return false;
+    //-         });
+    //-     });
   body
-    div
+    nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
+      a.navbar-brand(href='/') CodeBattles
+      ul.nav.navbar-nav
+        li.nav-item
+          a.nav-link(href='/') Home
+        li.nav-item
+          a.nav-link(href='/problems') Problem List
+        li.nav-item
+          a.nav-link(href='/leaderboard/1') Leaderboard 
+    
     script(async='', defer='')
     h2 Your code has an error.
 
@@ -32,6 +55,7 @@ html
        tr
         td  #{n}
         td  #{error}
+        td
 
        while m <= numCases
         tr
@@ -43,7 +67,23 @@ html
      input#username(type="hidden" value=username name="username")
      input#attemptid(type="hidden" value=AttemptId name="attemptid")
      button#try_again.btn.btn-primary(type='submit') Try Problem Again
-    button#problem_list.btn.btn-danger(onclick="location.href='/problems'") Try Another Problem
+
+    // form(name = "Get_Hint", method = "POST")
+    // input#username(type="hidden" value=username name="username")
+    // input#attemptid(type="hidden" value=AttemptId name="attemptid")
+    button#hintButton.btn.btn-primary(type='submit', onclick="getElementById('hintDiv').style.display = 'block'; this.style.display = 'none'") Get Hint
+    div#hintDiv.hidden
+     h5 
+      |This hint will show you the input used on the failed test case(case number 
+      strong #{numPassed+1}
+      |) There will be a 5 minute penalty for viewing this hint. Are you sure you want to continue?
+     button#yeshint.btn.btn-success(onclick="getElementById('HintText').style.display = 'block'; getElementById('hintDiv').style.display='none'; hintPenalty()") Yes
+     button#noHint.btn.btn-danger(onclick="getElementById('hintButton').style.display = 'block'; getElementById('hintDiv').style.display='none'") No
+
+    div#HintText.hidden
+     h5
+      |The input for test case #{numPassed+1} is
+     p #{FailedInput}
 
 
 

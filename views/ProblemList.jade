@@ -10,20 +10,30 @@ meta(name='description', content='')
 link(href="css/bootstrap.min.css", rel="stylesheet")
 
 body
-h1 Problem List
-div(class="table-responsive")
-	table(class="table table-hover" id="thetable")
-		thead
-			th Problem #
-			th problem Name
-		tbody
-			each item in problemList
-				tr(id="TableRow")
-					td=item.ProblemId
-					td=item.title
+ nav.navbar.navbar-expand-sm.bg-dark.navbar-dark
+  a.navbar-brand(href='/') CodeBattles
+  ul.nav.navbar-nav
+    li.nav-item
+      a.nav-link(href='/') Home
+    li.nav-item.active
+      a.nav-link(href='/problems') Problem List
+    li.nav-item
+      a.nav-link(href='/leaderboard/1') Leaderboard 
+
+ h1 Problem List
+ div(class="table-responsive")
+    table(class="table table-hover" id="thetable")
+        thead
+            th Problem #
+            th problem Name
+        tbody
+            each item in problemList
+                tr(id="TableRow")
+                    td=item.ProblemId
+                    td=item.title
 script(src="http://code.jquery.com/jquery-1.11.0.min.js")
 script.
-	$('#thetable').find('tr').click( function(){
-	var rowclicked = ($(this).index()+1);
-	location.href='/challenge/intro/'+rowclicked;
-	});
+    $('#thetable').find('tr').click( function(){
+    var rowclicked = ($(this).index()+1);
+    location.href='/challenge/intro/'+rowclicked;
+    });

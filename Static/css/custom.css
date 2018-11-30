@@ -2,6 +2,10 @@ p, h1, h2{
 	white-space: pre-wrap;
 }
 
+.hidden{
+	display:none;
+}
+
 table.center-table
 {
   margin: 0 auto !important;
