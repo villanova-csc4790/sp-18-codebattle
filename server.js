@@ -83,12 +83,12 @@ app.post('/submitted/:pnum', urlencodedParser, function(req, res){
 										if(err2) throw err2;
 									});
 
-									con.query("SELECT StartTime, EndTime, Attempts, Problem, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err3, result3, fields3){
+									con.query("SELECT StartTime, EndTime, Attempts, Problem, Penalties, username FROM Attempt WHERE AttemptId="+req.body.attemptid, function(err3, result3, fields3){
 										if (err3) throw err3
-										var totaltime =  (result3[0].EndTime-result3[0].StartTime)+(result3[0].Attempts-1)*300000;
+										var totaltime =  (result3[0].EndTime-result3[0].StartTime)+(result3[0].Attempts-1)*300000+(result3[0].Penalties)*300000;
 										Minutes = totaltime/60000;
 										Minutes = +Minutes.toFixed(2);
-													con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem=" + pnum + " AND EndTime IS NOT NULL ORDER BY totaltime ASC LIMIT 10", function(err4,result4,fields4){
+													con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000+Penalties*300000 AS totaltime FROM Attempt WHERE Problem=" + pnum + " AND EndTime IS NOT NULL ORDER BY totaltime ASC LIMIT 10", function(err4,result4,fields4){
 														if(err4) throw err4;
 														for(var j =0;j<result4.length;j++){
 															var temp = result4[j].totaltime/60000;
@@ -157,15 +157,24 @@ con.connect(function(err) {
 
 app.post('/hint', urlencodedParser, function(req,res){
 	console.log(req)
-	con.query("UPDATE Attempt SET Attempts = Attempts+1 WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
+	con.query("UPDATE Attempt SET Penalties = Penalties+1 WHERE AttemptId="+req.body.attemptid, function(err, result, fields){
 		if(err) throw err
 	}) 	
 });
 
 app.get('/problems', function(req, res){
    con.query("SELECT ProblemId, title FROM problem", function (err, result, fields) {
-     if (err) throw err;
-      res.render('ProblemList', { problemList: result });
+    	if (err) throw err;
+    	con.query("SELECT Problem, IFNULL(SUM(Attempts),0) AS Tries FROM Attempt GROUP BY Problem ORDER BY Problem", function(err1,result1,fields1){
+     		if(err1) throw err1;
+     		con.query("SELECT Problem, COUNT(AttemptId) AS Successes FROM Attempt WHERE EndTime IS NOT NULL GROUP BY Problem ORDER BY Problem", function(err2,result2,fields2){
+     			if(err2) throw err2;
+         		console.log(result2);
+
+	     		res.render('ProblemList', { problemList: result, numTries: result1, numSuccess: result2});
+
+     		});
+    	});
     });  
 })
 
@@ -194,7 +203,7 @@ app.get('/leaderboard/:pnum', function(req, res){
 			selected = result[0].title;
 	});
 
-	con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000 AS totaltime FROM Attempt WHERE Problem="+pnum+" AND EndTime IS NOT NULL ORDER BY totaltime ASC", function(err,result2,fields){
+	con.query("SELECT username, EndTime-StartTime+(Attempts-1)*300000+Penalties*300000 AS totaltime FROM Attempt WHERE Problem="+pnum+" AND EndTime IS NOT NULL ORDER BY totaltime ASC", function(err,result2,fields){
         if(err) throw err;
         for(var i =0;i<result2.length;i++){
         	var temp = result2[i].totaltime/60000;

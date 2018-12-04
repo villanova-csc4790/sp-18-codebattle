@@ -20,17 +20,55 @@ body
     li.nav-item
       a.nav-link(href='/leaderboard/1') Leaderboard 
 
+
+
  h1 Problem List
  div(class="table-responsive")
     table(class="table table-hover" id="thetable")
         thead
             th Problem #
             th problem Name
+            th Attempts
+            th Correct Answers
+            th Solve Pct.
         tbody
+            -var countA=0
+            -var probA=1
+            -var countS=0
+            -var probS=1
+
             each item in problemList
-                tr(id="TableRow")
+                -var numAttempts=0;
+                -var numSolves=0;
+                tr
                     td=item.ProblemId
                     td=item.title
+                    if(numTries[countA] != null)
+                      if(numTries[countA].Problem == probA)
+                        td=numTries[countA].Tries
+                        -numAttempts=numTries[countA].Tries
+                        -countA++                        
+                      else
+                        td=0
+                    else
+                      td=0
+                    -probA++
+                    if(numSuccess[countS] != null)
+                      if(numSuccess[countS].Problem == probS)
+                        td=numSuccess[countS].Successes
+                        -numSolves=numSuccess[countS].Successes
+                        -countS++
+                      else
+                        td=0
+                    else
+                      td=0
+                    -probS++
+                    if(numSolves > 0)
+                      td=numSolves/numAttempts*100
+                    else
+                      td=0
+
+                    
 script(src="http://code.jquery.com/jquery-1.11.0.min.js")
 script.
     $('#thetable').find('tr').click( function(){

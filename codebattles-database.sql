@@ -18,7 +18,8 @@ CREATE TABLE problems.Attempt
 	Problem INT NOT NULL,
 	StartTime BIGINT, 
 	EndTime BIGINT,
-	Attempts INT,
+	Attempts INT DEFAULT 0,
+	Penalties INT DEFAULT 0,
 	SourceCode VARCHAR(10000),
 	FOREIGN KEY (Problem) references problem(ProblemId),
 	PRIMARY KEY (AttemptId)
@@ -165,7 +166,7 @@ Values(2,'8
 INSERT INTO problems.TestCases(ProblemId,Input,expected_output)
 Values(2,'4
 2 7 11 15
-17','1 4');
+17','0 3');
 
 INSERT INTO problems.TestCases(ProblemId,Input,expected_output)
 Values(2,'5
