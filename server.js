@@ -167,8 +167,13 @@ app.get('/problems', function(req, res){
     	if (err) throw err;
     	con.query("SELECT Problem, IFNULL(SUM(Attempts),0) AS Tries FROM Attempt GROUP BY Problem ORDER BY Problem", function(err1,result1,fields1){
      		if(err1) throw err1;
-     		con.query("SELECT Problem, COUNT(AttemptId) AS Successes FROM Attempt WHERE EndTime IS NOT NULL GROUP BY Problem ORDER BY Problem", function(err2,result2,fields2){
+     		con.query("SELECT Problem, COUNT(AttemptId) AS Successes, MIN(EndTime-StartTime+(Attempts-1)*300000+Penalties*300000) AS TopTime FROM Attempt WHERE EndTime IS NOT NULL GROUP BY Problem ORDER BY Problem", function(err2,result2,fields2){
      			if(err2) throw err2;
+     			for(var i =0;i<result2.length;i++){
+        			var temp = result2[i].TopTime/60000;
+        			temp = +temp.toFixed(2);
+        			result2[i].TopTime = temp;
+        		}
          		console.log(result2);
 
 	     		res.render('ProblemList', { problemList: result, numTries: result1, numSuccess: result2});

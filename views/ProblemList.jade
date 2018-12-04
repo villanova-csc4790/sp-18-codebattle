@@ -31,6 +31,7 @@ body
             th Attempts
             th Correct Answers
             th Solve Pct.
+            th Top Time (Minutes)
         tbody
             -var countA=0
             -var probA=1
@@ -57,16 +58,18 @@ body
                       if(numSuccess[countS].Problem == probS)
                         td=numSuccess[countS].Successes
                         -numSolves=numSuccess[countS].Successes
+                        td=numSolves/numAttempts*100
+                        td=numSuccess[countS].TopTime
                         -countS++
                       else
                         td=0
+                        td=0
+                        td Unsolved
                     else
                       td=0
+                      td=0
+                      td Unsolved
                     -probS++
-                    if(numSolves > 0)
-                      td=numSolves/numAttempts*100
-                    else
-                      td=0
 
                     
 script(src="http://code.jquery.com/jquery-1.11.0.min.js")
